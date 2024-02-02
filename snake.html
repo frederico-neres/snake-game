@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+
+<canvas id="tela" ></canvas>
+<div id="telafimjogo">
+	<button id="btn" onClick="window.location.reload()">Restart</button>
+</div>
+
+<!-- <div id="pontos">0</div> -->
+<h1 id="pontos">0</h1>
+<style type="text/css">
+	body{
+		background-color: #008B8B;
+	}
+	#tela{
+		position: absolute;
+		/*border: 1px solid;*/
+		width:80%;
+		top: 0; bottom: 0;
+		left: 0; right: 0;
+		margin: auto;
+		background-color: #008B8B;
+	}
+	#telafimjogo{
+		position: absolute;
+		/*border: 1px solid;*/
+		width:60%;
+		height: 60%;
+		left:50%;
+		top:-50%;
+		margin-left: -30%;
+		margin-top: -15%;
+	/*	top: 0; bottom: 0;
+		left: 0; right: 0;
+		margin: auto;*/
+		/*background-color: #D2B48C;*/
+		/*display: none;*/
+		transition: all 1s linear;
+		z-index: 1;
+		background: rgba(0,0,0,0.3);
+
+	}
+	#btn{
+		position: absolute;
+		/*border: 1px solid;*/
+		font-family: Impact, Charcoal, sans-serif;
+		font-size: 50px;
+		text-align: center;
+		color: #FFF;
+		width:60%;
+		height:70px;
+		top: 0; bottom: 0;
+		left: 0; right: 0;
+		margin: auto;
+		background-color:#D2691E;
+		z-index: 1;
+
+	}
+
+	#pontos{
+		position:absolute;
+		font-family: Impact, Charcoal, sans-serif;
+		/*font-size: 500%;*/
+		text-align: center;
+		width: 20%;
+		height: 20%;	
+		/*top:0;bottom: 0;*/
+		left:0; right:0;
+		margin:auto;
+		/*left:20%;*/
+		color:#FFF;
+		/*background-color: #F0F;
+	}
+</style>
+<script type="text/javascript">
+
+
+var canvas=document.getElementById("tela");
+var ctx=canvas.getContext('2d');
+
+var dir=0;
+var tamMAXcalda=250;
+var tamCalda=-1;
+
+var contTam=140;
+var velocity=90000000;
+
+var frutaX,frutaY;
+
+var pontos=document.getElementById("pontos");
+var contpontos=0;
+
+var fimgame=false;
+
+var cont=130;
+var cony=40;
+var contold;
+var conyold;
+
+var tamcanx=canvas.width/10;
+var tamcany=canvas.height/10;
+
+console.log(tamcany);
+var ff=[];
+
+
+var calx=[];
+var caly=[];
+
+var calxold=[];
+var calyold=[];
+
+
+for(i=0;i<tamMAXcalda;i++){
+	calx[i]=contTam;
+	calxold[i]=contTam;
+	contTam+=10;
+	caly[i]=40;
+	calyold[i]=40;
+}
+
+function oldc(){
+
+	for(clx in calxold){
+		calxold[clx]=calx[clx];
+	}
+	for(cly in calyold){
+		calyold[cly]=caly[cly];
+	}
+
+
+	for(cx in calx){
+		if(cx==0){
+			calx[cx]=contold;
+		}else{
+			var cxaux =cx;
+			calx[cx]=calxold[--cxaux];
+			// console.log(calx[cx]+"*********"+calxold[--cxaux]);
+		}		
+	}
+
+
+	for(cy in caly){
+		if(cy==0){
+			caly[cy]=conyold;
+		}else{
+			var cyaux =cy;
+			caly[cy]=calyold[--cyaux];
+		}
+	}
+
+
+
+	contold=cont;
+	conyold=cony;
+
+}
+
+for(i=0;i<tamcanx;i++){
+	var c=(i*10);
+	ff[i]=c;
+}
+
+
+function randFruta(){
+	if(tamCalda<tamMAXcalda){
+		tamCalda++;
+	}
+	frutaX = (Math.floor(Math.random()*25+2)*10);
+	frutaY = (Math.floor(Math.random()*10+2)*10);
+	console.log(frutaX+"--*****--"+frutaY);
+}
+
+randFruta();
+
+
+
+function fimdejogo (){
+	fimgame=true;
+	document.getElementById("telafimjogo").style="top:50%;";
+}
+
+
+function loop(){
+
+		switch(dir){
+		case 0:
+	     cont-=10;
+		break;
+		case 1:
+		 cont+=10;
+		break;
+		case 2:
+		 cony-=10;
+		break;
+		case 3:
+		 cony+=10;
+		break;
+	}
+
+	oldc();
+
+
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+
+	for(i=0;i<tamcany;i++){
+
+		yy=i*10;
+
+	for(efs in ff){
+		
+		if(ff[efs]==cont && yy==cony){
+			ctx.fillStyle="#800000";
+			ctx.fillRect(ff[efs],yy,9,9);
+		}else if(ff[efs]==0 || ff[efs]==290 || i==0 || i==tamcany-1){
+			ctx.fillStyle="#003C3C";
+			ctx.fillRect(ff[efs],yy,9,9);
+
+		}else if(ff[efs]==frutaX && yy==frutaY){
+			ctx.fillStyle="#800000";
+			ctx.fillRect(ff[efs],yy,9,9);
+		}else{
+			ctx.fillStyle="#20B2AA";
+			ctx.fillRect(ff[efs],yy,9,9);
+			for(ca in calx){
+
+				if(ca==tamCalda){
+					break;
+				}
+
+				if(ff[efs]==calx[ca] && yy==caly[ca]){
+					ctx.fillStyle="#B22222";
+					ctx.fillRect(ff[efs],yy,9,9);
+				}
+
+				if(calx[ca]==cont && caly[ca]==cony){
+					// console.log("garrrrouuu!!!!!");
+					fimdejogo();
+				}
+			}
+		}
+
+	}
+
+}
+
+
+// for(i=0;i<100000000;i++){}
+// for(i=0;i<30000000;i++){}
+for(i=0;i<velocity;i++){}
+
+	// switch(dir){
+	// 	case 0:
+	//      cont-=10;
+	// 	break;
+	// 	case 1:
+	// 	 cont+=10;
+	// 	break;
+	// 	case 2:
+	// 	 cony-=10;
+	// 	break;
+	// 	case 3:
+	// 	 cony+=10;
+	// 	break;
+	// }
+
+
+// oldc();
+
+if(cont==0){
+	// cont=canvas.width;
+	fimdejogo();
+}else if(cont==(canvas.width)-10){
+	// cont=0;
+	fimdejogo();
+}else if(cony==0){
+	// cony=canvas.height;
+	fimdejogo();
+}else if(cony==(canvas.height)-10){
+	fimdejogo();
+	// cony=10;
+}
+
+	if(cont==frutaX && cony==frutaY){
+		contpontos++;
+		randFruta();
+		pontos.innerHTML=contpontos;
+		velocity-=3000000;
+}
+
+
+	if(fimgame==false){
+
+	window.requestAnimationFrame(loop);
+}
+
+}
+
+loop();
+
+
+window.addEventListener("keydown",function(ev){
+	switch(ev.keyCode){
+		case 40:
+			if(dir!=2){
+				dir=3;
+			}
+		break;
+		case 38:
+			if(dir!=3){
+				dir=2;
+			}
+		break;
+		case 37:
+			if(dir!=1){
+				dir=0;
+			}
+		break;
+		case 39:
+			if(dir!=0){
+				dir=1;
+			}
+		break;
+			
+
+	}
+});
+</script>
+
+
+</body>
+</html>
